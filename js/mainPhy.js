@@ -35,7 +35,7 @@
 var pos=0;
 var square_count=0;
 /*新方法*/
-var test=['1','2','3',{n:'\\sqrt',u1:[{n:'\\frac',u1:['1'],u2:['2','a','\\gamma','\\Gamma']},'\\Theta']}];
+var test=[];//['1','2','3',{n:'\\sqrt',u1:[{n:'\\frac',u1:['1'],u2:['2','a','\\gamma','\\Gamma']},'\\Theta']}];
 
 function deepcopy(t){
     if (t==undefined)
@@ -122,8 +122,7 @@ function addElementToArray(arr, p, elem){
     }
 }
 
-function deleteElement(arr, pos){
-
+function deleteElement(arr, p){
 }
 
 /**/
@@ -135,21 +134,35 @@ var buttons=[
   {s:'根号',d:'sqrt',t:'method'},
   {s:'Π',d:'pi',t:'method'},
   {s:'Σ',d:'sigma',t:'method'},
-
+  {s:'huanhang'},
   {s:'α',d:'\\alpha',t:'word'},
   {s:'β',d:'\\beta',t:'word'},
   {s:'γ',d:'\\gamma',t:'word'},
   {s:'δ',d:'\\delta',t:'word'},
   {s:'π',d:'\\pi',t:'word'},
+  {s:'ξ',d:'\\xi',t:'word'},
+  {s:'φ',d:'\\varphi',t:'word'},
+  {s:'μ',d:'\\mu',t:'word'},
+  {s:'λ',d:'\\lambda',t:'word'},
+  {s:'θ',d:'\\theta',t:'word'},
+  {s:'η',d:'\\eta',t:'word'},
+  {s:'ε',d:'\\varepsilon',t:'word'},
+  {s:'ω',d:'\\omega',t:'word'},
 
-  {s:'<',d:'left',t:'method'},
-  {s:'>',d:'right',t:'method'}
+  {s:'Φ',d:'\\Phi',t:'word'},
+  {s:'Δ',d:'\\Delta',t:'word'},
+  {s:'Ω',d:'\\Omega',t:'word'},
+  {s:'huanhang'},
+  {s:'·',d:'\\cdot',t:'word'},
+  //
+  // {s:'<',d:'left',t:'method'},
+  // {s:'>',d:'right',t:'method'}
 ];
 
 function addButtons(){
   $('.formulaButton').remove();
   for (i in buttons){
-    $('#buttons').append('<button class="formulaButton" style="margin-right:5px;" onclick="clickButton('+i+');">'+buttons[i].s+'</button>');
+    $('#buttons').append(buttons[i].s=='huanhang'?('<br>'):('<button class="formulaButton" style="margin-right:5px;" onclick="clickButton('+i+');">'+buttons[i].s+'</button>'));
   }
 }
 /*注意，退格键要处理一下*/
@@ -208,7 +221,7 @@ function typeIn(d){
 var strpre='';
 
 document.addEventListener('keyup',function(e){
-  console.log(e.which);
+  //console.log(e.which);
   if (e.which>=65&&e.which<=90){
     typeIn(e.shiftKey?String.fromCharCode(e.which).toUpperCase():String.fromCharCode(e.which).toLowerCase());
   }
