@@ -70,6 +70,7 @@ function convert(arr){
 }
 
 function convertObj(obj){
+    //把一个对象转换成tex表达式
     if (typeof(obj)==='string'){
         return obj+' ';
     }else{
@@ -78,7 +79,14 @@ function convertObj(obj){
 }
 
 function objectSize(x){
-    return arraySize(x.u1)+arraySize(x.u2)+1;
+    var ret;
+    try{
+        ret=arraySize(x.u1)+arraySize(x.u2)+1;
+        return ret;
+    }
+    catch(e){
+        console.log('error');
+    }
 }
 
 function arraySize(x){
@@ -125,9 +133,15 @@ var buttons=[
   {s:'上标',d:'^',t:'method'},
   {s:'下标',d:'_',t:'method'},
   {s:'根号',d:'sqrt',t:'method'},
+  {s:'Π',d:'pi',t:'method'},
+  {s:'Σ',d:'sigma',t:'method'},
+
   {s:'α',d:'\\alpha',t:'word'},
   {s:'β',d:'\\beta',t:'word'},
   {s:'γ',d:'\\gamma',t:'word'},
+  {s:'δ',d:'\\delta',t:'word'},
+  {s:'π',d:'\\pi',t:'word'},
+
   {s:'<',d:'left',t:'method'},
   {s:'>',d:'right',t:'method'}
 ];
@@ -164,6 +178,20 @@ function execute(d){
     }else if (d=='sqrt'){
         test=addElementToArray(test,pos,{n:'\\sqrt',u1:[]});
         pos++;
+    }else if (d=='pi'){
+        test=addElementToArray(test,pos,'\\prod^{');
+        pos++;
+        test=addElementToArray(test,pos,'}_{');
+        pos++;
+        test=addElementToArray(test,pos,'}');
+        pos--;
+    }else if (d=='sigma'){
+        test=addElementToArray(test,pos,'\\sum^{');
+        pos++;
+        test=addElementToArray(test,pos,'}_{');
+        pos++;
+        test=addElementToArray(test,pos,'}');
+        pos--;
     }else if (d=='left'){
         pos--;
     }else if (d=='right'){
@@ -180,10 +208,48 @@ function typeIn(d){
 var strpre='';
 
 document.addEventListener('keyup',function(e){
-  // console.log(e);
+  console.log(e.which);
   if (e.which>=65&&e.which<=90){
-    str+=String.fromCharCode(e.which).toLowerCase();
-    $('#textOut').val(str);
+    typeIn(e.shiftKey?String.fromCharCode(e.which).toUpperCase():String.fromCharCode(e.which).toLowerCase());
+  }
+  if (e.which>=48&&e.which<=57){
+    typeIn(e.shiftKey?([')','!','@','\\#','\\$','\\%','^','\\&','*','('][e.which-48]):(e.which-48+''));
+  }
+  switch (e.which){
+    case 38:case 37:if (pos>0)pos--;break;
+    case 40:case 39:if (pos<arraySize(test)-1)pos++;break;
+  }
+  if (e.shiftKey){
+      switch (e.which) {
+        case 189:typeIn('_');break;
+        case 187:typeIn('+');break;
+        case 219:typeIn('\\{');break;
+        case 221:typeIn('\\}');break;
+        case 220:typeIn('|');break;
+        case 186:typeIn(':');break;
+        case 222:typeIn('\"');break;
+        case 188:typeIn('<');break;
+        case 190:typeIn('>');break;
+        case 191:typeIn('?');break;
+        case 192:typeIn('~');break;
+      }
+  }
+  if (!e.shiftKey){
+    switch (e.which) {
+        case 189:typeIn('-');break;
+        case 187:typeIn('=');break;
+        case 219:typeIn('[');break;
+        case 221:typeIn(']');break;
+        case 186:typeIn(';');break;
+        case 222:typeIn('\'');break;
+        case 188:typeIn(',');break;
+        case 190:typeIn('.');break;
+        case 191:typeIn('/');break;
+        case 192:typeIn('`');break;
+        case 13: typeIn('\\\\');break;
+        case 32:typeIn('\\ ');break;
+        case 8:deleteElement(test,pos);break;
+    }
   }
 });
 
@@ -197,8 +263,8 @@ setInterval(function(){
 		render();
 	}
 	strpre=str;
-
-
+    $('#textOut').val(str);
+    $('#textIn').val(JSON.stringify(test));
     var u=$('[id^=MathJax-Span]');
     for (var i in u) if (u[i].innerHTML=='□') {
       u[i].style.color='blue';
